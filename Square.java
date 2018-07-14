@@ -8,79 +8,44 @@ import java.util.LinkedList;
  * @version 0.9
  */
 public class Square {
-	// Each square is made of nine numbers 
-	private Number one = new Number(); 
-	private Number two = new Number(); 
-	private Number three = new Number();
-	private Number four = new Number(); 
-	private Number five = new Number(); 
-	private Number six = new Number(); 
-	private Number seven = new Number(); 
-	private Number eight = new Number();
-	private Number nine = new Number(); 
 	
+	// Stores the size of the board, arrives from Board 
+	private int size;
+	
+	// Stores all the numbers in the board in the form of a 1D array 
 	private LinkedList<Number> nums = new LinkedList<>(); 
 	
-	// Empty constructor 
-	public Square() {
-		nums.add(one);
-		nums.add(two);
-		nums.add(three);
-		nums.add(four);
-		nums.add(five);
-		nums.add(six);
-		nums.add(seven);
-		nums.add(eight);
-		nums.add(nine);
+	/**
+	 * The Constructor for a generic number with no given unique qualities 
+	 * @param size The size of the board which is being used 
+	 */
+	public Square(int size) {
+		this.size = size; 
+		for(int x = 0; x < (size * size); x++)
+			nums.add(new Number(this.size));
 	}
 	
-	// Constructor with known values 
-	public Square(LinkedList<Integer> values) {
+	/**
+	 * The constuctor if the square is to be populated with values 
+	 * @param size The size of the board which the square is being used 
+	 * @param values The values in the form of a linked list which contain the location and values of any given cells 
+	 */
+	public Square(int size, LinkedList<Integer> values) {
+		this.size = size; 
+		for(int x = 0; x < (size * size); x++)
+			nums.add(new Number(this.size));
 		if(values.size() % 2 == 0) {
 			Iterator<Integer> iter = values.iterator(); 
 			while(iter.hasNext()) {
 				int location = iter.next(); 
-				switch (location) {
-					case 1: one.setNumber(iter.next());
-							one.setGiven(true);
-							break;
-					case 2: two.setNumber(iter.next());
-							two.setGiven(true);
-							break;
-					case 3: three.setNumber(iter.next());
-							three.setGiven(true);
-							break;	
-					case 4: four.setNumber(iter.next());
-							four.setGiven(true);
-							break;
-					case 5: five.setNumber(iter.next());
-							five.setGiven(true);
-							break;
-					case 6: six.setNumber(iter.next());
-							six.setGiven(true);
-							break;
-					case 7: seven.setNumber(iter.next());
-							seven.setGiven(true);
-							break;
-					case 8: eight.setNumber(iter.next());
-							eight.setGiven(true);
-							break;
-					case 9: nine.setNumber(iter.next());
-							nine.setGiven(true);
-							break;
-					default: iter.next();		
+				if(location > (nums.size() + 1))
+					iter.next();
+				else {
+					nums.get(location - 1).setNumber(iter.next());
+					nums.get(location - 1).setGiven(true);
 				}
 			}
 		}
-		nums.add(one);
-		nums.add(two);
-		nums.add(three);
-		nums.add(four);
-		nums.add(five);
-		nums.add(six);
-		nums.add(seven);
-		nums.add(eight);
-		nums.add(nine);
 	}
 	
 	/**
@@ -89,52 +54,45 @@ public class Square {
 	 * @param value what is the value which you wan to set at the location
 	 */
 	public void set(int location, int value) {
-		switch (location) {
-			case 1: one.setNumber(value);
-					break;
-			case 2: two.setNumber(value);
-					break;
-			case 3: three.setNumber(value);
-					break;	
-			case 4: four.setNumber(value);
-					break;
-			case 5: five.setNumber(value);
-					break;
-			case 6: six.setNumber(value);
-					break;
-			case 7: seven.setNumber(value);
-					break;
-			case 8: eight.setNumber(value);
-					break;
-			case 9: nine.setNumber(value);
-					break;
+		if(location <= (nums.size() + 1))
+			nums.get(location - 1).setNumber(value);
+	}
+	
+	/**
+	 * Returns all numbers in a given row of the Square
+	 * @param row The row which is to be returned
+	 * @return ALL number elements inside of the requested row 
+	 */
+	public Number[] getRow(int row) {
+		Number[] array = new Number[size]; 
+		if(row < size) {
+			int i = 0;
+			for(int x = (row * size); x < ((row + 1) * size); x++)
+				array[i++] = nums.get(x); 
 		}
+		return array; 
 	}
 	
-	public Number[] getTopRow() {
-		return new Number[] {one, two, three}; 
+	/**
+	 * Returns all numbers in a given Column of the Square 
+	 * @param col THe column whose element are to be returned 
+	 * @return ALL number elements who exist inside the column 
+	 */
+	public Number[] getCol(int col) {
+		Number[] array = new Number[size]; 
+		if(col < size) {
+			int inc = 0; 
+			for(int x = 0; x < nums.size(); x++)
+				if(x % size == col)
+					array[inc++] = nums.get(x); 
+		}
+		return array; 
 	}
 	
-	public Number[] getMidRow() {
-		return new Number[] {four, five, six}; 
-	}
-	
-	public Number[] getBottomRow() {
-		return new Number[] {seven, eight, nine}; 
-	}
-	
-	public Number[] getFirstCol() {
-		return new Number[] {one, four, seven}; 
-	}
-	
-	public Number[] getMidCol() {
-		return new Number[] {two, five, eight}; 
-	}
-	
-	public Number[] getThirdCol() {
-		return new Number[] {three, six, nine}; 
-	}
-	
+	/**
+	 * Returns the values inside the square which are known to some level of certainty 
+	 * @return Integer representations of the known values in the Square 
+	 */
 	public LinkedList<Integer> getKnown() {
 		LinkedList<Integer> known = new LinkedList<>(); 
 		for(Number current : nums)
@@ -143,8 +101,35 @@ public class Square {
 		return known; 
 	}
 	
+	/**
+	 * Returns the Number element at a given cell location 
+	 * @param number The cell location inside of the Square 
+	 * @return The Number element at the given location inside of the Square 
+	 */
 	public Number getNum(int number) {
 		return nums.get(number);
+	}
+	
+	/**
+	 * Takes a linked list like that of the two input constructor and completely reformats the Square 
+	 * @param values The values which will be used to populate the Square 
+	 */
+	public void update(LinkedList<Integer> values) {
+		nums.clear();
+		for(int x = 0; x < (size * size); x++)
+			nums.add(new Number(this.size));
+		if(values.size() % 2 == 0) {
+			Iterator<Integer> iter = values.iterator(); 
+			while(iter.hasNext()) {
+				int location = iter.next(); 
+				if(location > (nums.size() + 1))
+					iter.next();
+				else {
+					nums.get(location - 1).setNumber(iter.next());
+					nums.get(location - 1).setGiven(true);
+				}
+			}
+		}
 	}
 	
 }
